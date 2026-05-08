@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Sparkles, Bell, FileSearch, Users, Compass, CalendarDays,
   ArrowRight, Star, ChevronRight, Github, Twitter, Linkedin
 } from "lucide-react";
 import FloatingBg from "@/components/FloatingBg";
+import { api } from "@/api";
 
 const features = [
   { icon: Sparkles, title: "AI Recommendations", desc: "Personalized opportunity matches powered by Claude Sonnet 4.5." },
@@ -21,11 +23,11 @@ const steps = [
   { n: "03", title: "Get personalized opportunities", desc: "We surface hackathons, internships, scholarships you'll actually win." },
 ];
 
-const livePreview = [
-  { type: "hackathon", title: "KLE Tech Hack 2026", org: "BVB Hubballi", deadline: "Apr 12", prize: "₹3,00,000" },
-  { type: "hackathon", title: "Smart India Hackathon", org: "Govt. of India", deadline: "May 20", prize: "₹1,00,000" },
-  { type: "internship", title: "GSoC India", org: "Google", deadline: "Mar 30", prize: "USD 3,000" },
-  { type: "scholarship", title: "Reliance Foundation", org: "Reliance", deadline: "Jul 1", prize: "₹6,00,000" },
+const livePreviewFallback = [
+  { type: "hackathon", title: "KLE Tech Hack 2026", organizer: "BVB Hubballi", deadline: "2026-04-12", prize: "₹3,00,000" },
+  { type: "hackathon", title: "Smart India Hackathon", organizer: "Govt. of India", deadline: "2026-05-20", prize: "₹1,00,000" },
+  { type: "internship", title: "GSoC India", organizer: "Google", deadline: "2026-03-30", prize: "USD 3,000" },
+  { type: "scholarship", title: "Reliance Foundation", organizer: "Reliance", deadline: "2026-07-01", prize: "₹6,00,000" },
 ];
 
 const testimonials = [
@@ -34,7 +36,26 @@ const testimonials = [
   { name: "Priya Patel", uni: "BITS Pilani", text: "Finally a productivity dashboard that doesn't feel like a chore. SIH applications have never been easier.", rating: 5 },
 ];
 
+const fmtDate = (iso) => {
+  if (!iso) return "TBD";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
+};
+
 export default function Landing() {
+  const [livePreview, setLivePreview] = useState(livePreviewFallback);
+
+  useEffect(() => {
+    api.get("/opportunities")
+      .then((r) => {
+        if (Array.isArray(r.data) && r.data.length > 0) {
+          setLivePreview(r.data.slice(0, 6));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       <FloatingBg />
@@ -98,16 +119,16 @@ export default function Landing() {
               </div>
               <div className="space-y-3">
                 {livePreview.slice(0,3).map((c,i) => (
-                  <motion.div key={i} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.3+i*0.15}}
+                  <motion.div key={c.id || i} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.3+i*0.15}}
                     className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-blue-500/30 transition">
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold">
                       {c.type[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">{c.title}</div>
-                      <div className="text-xs text-gray-500">{c.org} · {c.deadline}</div>
+                      <div className="text-xs text-gray-500 truncate">{c.organizer} · {fmtDate(c.deadline)}</div>
                     </div>
-                    <span className="text-xs text-blue-300">{c.prize}</span>
+                    <span className="text-xs text-blue-300 whitespace-nowrap">{c.prize}</span>
                   </motion.div>
                 ))}
                 <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-blue-500/20 flex items-center gap-3">
@@ -184,17 +205,17 @@ export default function Landing() {
             </Link>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {livePreview.map((c,i) => (
-              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:i*0.06}}
+            {livePreview.slice(0,4).map((c,i) => (
+              <motion.div key={c.id || i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:i*0.06}}
                 className="glass card-hover rounded-2xl p-5">
-                <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20 mb-4">
+                <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20 mb-4 capitalize">
                   {c.type}
                 </span>
-                <h3 className="font-heading font-semibold text-lg mb-1">{c.title}</h3>
-                <p className="text-xs text-gray-500 mb-4">{c.org}</p>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-400">📅 {c.deadline}</span>
-                  <span className="text-blue-300 font-semibold">{c.prize}</span>
+                <h3 className="font-heading font-semibold text-lg mb-1 line-clamp-2">{c.title}</h3>
+                <p className="text-xs text-gray-500 mb-4 truncate">{c.organizer}</p>
+                <div className="flex items-center justify-between text-xs gap-2">
+                  <span className="text-gray-400 truncate">📅 {fmtDate(c.deadline)}</span>
+                  <span className="text-blue-300 font-semibold whitespace-nowrap truncate">{c.prize}</span>
                 </div>
               </motion.div>
             ))}

@@ -273,13 +273,16 @@ async def update_profile(data: dict, user: User = Depends(get_current_user)):
 
 # ---------- Opportunities ----------
 @api_router.get("/opportunities")
-async def list_opportunities(type: Optional[str] = None, q: Optional[str] = None):
+async def list_opportunities(response: Response, type: Optional[str] = None, q: Optional[str] = None, location: Optional[str] = None):
     query = {}
     if type and type != "all":
         query["type"] = type
     if q:
         query["title"] = {"$regex": q, "$options": "i"}
+    if location and location != "all":
+        query["location"] = {"$regex": location, "$options": "i"}
     docs = await db.opportunities.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    response.headers["Cache-Control"] = "no-store, max-age=0"
     return docs
 
 @api_router.get("/opportunities/{opp_id}")
