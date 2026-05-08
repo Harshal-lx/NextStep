@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Bookmark, BookmarkCheck, Share2, Calendar, MapPin, Trophy, Users, ArrowLeft, Sparkles, Bell } from "lucide-react";
+import { Bookmark, BookmarkCheck, Share2, Calendar, MapPin, Trophy, Users, ArrowLeft, Sparkles, Bell, ExternalLink } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import { api } from "@/api";
 import { toast } from "sonner";
@@ -27,6 +27,16 @@ export default function OpportunityDetails() {
     } catch { toast.error("Failed"); }
   };
 
+  const share = async () => {
+    const url = window.location.href;
+    const title = opp?.title || "Opportunity";
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); return; } catch {}
+    }
+    try { await navigator.clipboard.writeText(url); toast.success("Link copied"); }
+    catch { toast.error("Copy failed"); }
+  };
+
   if (!opp) return <AppShell><div className="text-gray-400">Loading…</div></AppShell>;
 
   const matchScore = Math.floor(70 + (opp.title.length % 25));
@@ -49,12 +59,26 @@ export default function OpportunityDetails() {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="flex flex-wrap gap-3">
-              <button data-testid="apply-btn" className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:scale-105 transition shadow-[0_0_20px_rgba(59,130,246,0.4)]">Apply Now</button>
+              <a
+                data-testid="apply-btn"
+                href={opp.apply_url && opp.apply_url !== "#" ? opp.apply_url : undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (!opp.apply_url || opp.apply_url === "#") {
+                    e.preventDefault();
+                    toast.error("No application link available yet");
+                  }
+                }}
+                className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:scale-105 transition shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 cursor-pointer"
+              >
+                Apply Now <ExternalLink className="w-3.5 h-3.5"/>
+              </a>
               <button data-testid="save-detail-btn" onClick={toggleSave} className="px-6 py-3 rounded-full glass border border-white/10 hover:bg-white/10 transition flex items-center gap-2">
                 {saved ? <BookmarkCheck className="w-4 h-4 text-blue-400"/> : <Bookmark className="w-4 h-4"/>}
                 {saved ? "Saved" : "Save"}
               </button>
-              <button className="px-6 py-3 rounded-full glass border border-white/10 hover:bg-white/10 transition flex items-center gap-2"><Share2 className="w-4 h-4"/>Share</button>
+              <button onClick={share} data-testid="share-btn" className="px-6 py-3 rounded-full glass border border-white/10 hover:bg-white/10 transition flex items-center gap-2"><Share2 className="w-4 h-4"/>Share</button>
             </div>
 
             <div className="glass rounded-2xl p-6">

@@ -394,8 +394,24 @@ SCRAPER_SYSTEM_PROMPT = (
     "(ISO format or 'TBD'), 'eligibility', 'prize', and 'apply_link'."
 )
 
+# Simple in-memory rate limit: 5 scrapes / 60s per user
+_SCRAPE_HITS: dict = {}
+_SCRAPE_WINDOW = 60
+_SCRAPE_MAX = 5
+
+def _check_scrape_rate(user_id: str):
+    import time
+    now = time.time()
+    bucket = [t for t in _SCRAPE_HITS.get(user_id, []) if now - t < _SCRAPE_WINDOW]
+    if len(bucket) >= _SCRAPE_MAX:
+        retry = int(_SCRAPE_WINDOW - (now - bucket[0]))
+        raise HTTPException(status_code=429, detail=f"Rate limit: try again in {retry}s")
+    bucket.append(now)
+    _SCRAPE_HITS[user_id] = bucket
+
 @api_router.post("/scrape-opportunity")
 async def scrape_opportunity(req: ScrapeRequest, user: User = Depends(get_current_user)):
+    _check_scrape_rate(user.user_id)
     # Step 1: Fetch raw text
     try:
         resp = requests.get(

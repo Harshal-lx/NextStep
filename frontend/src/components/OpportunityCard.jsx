@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkCheck, Clock, MapPin, Trophy, Sparkles } from "lucide-react";
+import { Bookmark, BookmarkCheck, Clock, MapPin, Trophy, Sparkles, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -67,13 +67,27 @@ export default function OpportunityCard({ opp, saved, onToggleSave }) {
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span className="gradient-text font-semibold">{matchScore}% match</span>
           </div>
-          <Link
-            to={`/opportunities/${opp.id}`}
-            data-testid={`view-btn-${opp.id}`}
-            className="text-xs px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:scale-105 transition shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-          >
-            View
-          </Link>
+          <div className="flex items-center gap-1.5">
+            {opp.apply_url && opp.apply_url !== "#" && (
+              <a
+                href={opp.apply_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid={`apply-card-${opp.id}`}
+                onClick={(e)=>e.stopPropagation()}
+                className="text-xs px-3 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center gap-1"
+              >
+                Apply <ExternalLink className="w-3 h-3"/>
+              </a>
+            )}
+            <Link
+              to={`/opportunities/${opp.id}`}
+              data-testid={`view-btn-${opp.id}`}
+              className="text-xs px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:scale-105 transition shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+            >
+              View
+            </Link>
+          </div>
         </div>
       </div>
     </motion.div>
