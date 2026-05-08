@@ -11,6 +11,9 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import httpx
+import json as _json
+import requests
+from bs4 import BeautifulSoup
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 ROOT_DIR = Path(__file__).parent
@@ -379,6 +382,72 @@ async def ai_recommend(user: User = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(500, f"AI error: {e}")
     return {"recommendation": reply}
+
+# ---------- Smart Hybrid Scraper ----------
+class ScrapeRequest(BaseModel):
+    url: str
+
+SCRAPER_SYSTEM_PROMPT = (
+    "You are an AI data extractor. Extract the opportunity from the provided text. "
+    "Return ONLY a valid JSON object with no markdown formatting. "
+    "The JSON must contain these exact keys: 'title', 'organizer', 'deadline' "
+    "(ISO format or 'TBD'), 'eligibility', 'prize', and 'apply_link'."
+)
+
+@api_router.post("/scrape-opportunity")
+async def scrape_opportunity(req: ScrapeRequest, user: User = Depends(get_current_user)):
+    # Step 1: Fetch raw text
+    try:
+        resp = requests.get(
+            req.url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                              "AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/120.0.0.0 Safari/537.36"
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to fetch URL: {e}")
+
+    soup = BeautifulSoup(resp.text, "html.parser")
+    for tag in soup(["script", "style", "noscript"]):
+        tag.decompose()
+    raw_text = soup.get_text(separator=" ", strip=True)
+    if not raw_text:
+        raise HTTPException(status_code=422, detail="No extractable text on page")
+    raw_text = raw_text[:12000]  # cap for token safety
+
+    # Step 2: AI parse
+    chat = LlmChat(
+        api_key=EMERGENT_LLM_KEY,
+        session_id=f"scrape_{user.user_id}",
+        system_message=SCRAPER_SYSTEM_PROMPT,
+    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+    try:
+        reply = await chat.send_message(UserMessage(text=raw_text))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM error: {e}")
+
+    cleaned = reply.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`")
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].strip()
+    try:
+        parsed = _json.loads(cleaned)
+    except Exception:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end == -1:
+            raise HTTPException(status_code=502, detail="Malformed LLM output")
+        try:
+            parsed = _json.loads(cleaned[start:end + 1])
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Malformed LLM output: {e}")
+
+    return parsed
 
 # ---------- Notifications ----------
 @api_router.get("/notifications")
