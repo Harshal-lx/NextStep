@@ -1,0 +1,140 @@
+{
+  "project_name": "NextStep",
+  "domain": "EdTech / AI Opportunity Discovery",
+  "theme": "dark",
+  "archetype": "7 (Electric & Neon)",
+  "design_philosophy": "A futuristic, AI-driven EdTech platform that feels like a high-end SaaS or developer tool (like Linear combined with Notion). Emphasizes 'Glassmorphism' (Optical Clarity) and 'The Tracing Beam' edge glows over solid neon backgrounds. Deep navy voids contrasted with sharp electric blue and purple gradients.",
+  "colors": {
+    "background": {
+      "default": "#0B1020",
+      "alt": "#111827",
+      "surface_glass": "rgba(255, 255, 255, 0.03)",
+      "surface_solid": "#131A2B"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#9CA3AF",
+      "muted": "#6B7280",
+      "accent": "#3B82F6"
+    },
+    "brand": {
+      "primary": "#3B82F6",
+      "secondary": "#8B5CF6",
+      "gradient": "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)",
+      "gradient_text": "bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500",
+      "glow": "rgba(59, 130, 246, 0.5)"
+    },
+    "status": {
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "info": "#3B82F6"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "focus": "rgba(59, 130, 246, 0.5)",
+      "glass": "rgba(255, 255, 255, 0.08)"
+    }
+  },
+  "typography": {
+    "font_family": {
+      "heading": "'Outfit', sans-serif",
+      "body": "'DM Sans', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-semibold",
+      "h4": "text-lg sm:text-xl font-medium",
+      "body": "text-base leading-relaxed text-gray-300",
+      "body_small": "text-sm text-gray-400",
+      "overline": "text-xs font-semibold uppercase tracking-[0.2em] text-blue-400"
+    },
+    "import_links": [
+      "@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap');"
+    ]
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing (p-6, p-8, p-12). Use 'The Control Room' bento grid for the dashboard and 'The Tetris Grid' for the marketing hero/features.",
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_gap": "py-24 md:py-32",
+    "card_padding": "p-6 md:p-8",
+    "grid_patterns": {
+      "bento_dashboard": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+      "bento_marketing": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-8"
+    }
+  },
+  "surfaces_and_components": {
+    "glass_card": {
+      "classes": "bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+      "hover": "hover:bg-white/[0.05] hover:border-blue-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300"
+    },
+    "solid_card": {
+      "classes": "bg-[#131A2B] border border-white/[0.05] rounded-2xl",
+      "hover": "hover:-translate-y-1 hover:border-white/[0.1] transition-transform duration-300"
+    },
+    "primary_button": {
+      "classes": "bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium px-6 py-3 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.3)]",
+      "hover": "hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] hover:scale-[1.02] transition-all duration-300"
+    },
+    "secondary_button": {
+      "classes": "bg-white/5 border border-white/10 text-white font-medium px-6 py-3 rounded-full backdrop-blur-md",
+      "hover": "hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+    },
+    "badge": {
+      "classes": "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20"
+    },
+    "sidebar": {
+      "classes": "bg-[#0B1020]/80 backdrop-blur-2xl border-r border-white/10 h-screen sticky top-0"
+    }
+  },
+  "motion_and_interactions": {
+    "page_transition": "framer-motion: initial opacity-0 y-4, animate opacity-100 y-0",
+    "hover_state": "All interactive elements must use specific transition properties, e.g., transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);",
+    "scroll": "lenis for smooth momentum scrolling on the marketing pages"
+  },
+  "media_and_assets": {
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-width 1.5, use currentColor"
+    },
+    "images": {
+      "hero_background": {
+        "url": "https://images.unsplash.com/photo-1771875802948-0d0f3424fe6d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbmVvbiUyMGFic3RyYWN0JTIwYmx1ZSUyMHB1cnBsZXxlbnwwfHx8fDE3NzgyNDE3ODV8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract dark background with electric blue and purple neon streaks to be used as a low-opacity hero background.",
+        "usage_classes": "absolute inset-0 object-cover opacity-20 mix-blend-screen"
+      },
+      "ai_recommendation_panel": {
+        "url": "https://images.unsplash.com/photo-1639322537138-5e513100b36e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwzfHxkYXJrJTIwZnV0dXJpc3RpYyUyMG5ldHdvcmslMjBub2Rlc3xlbnwwfHx8fDE3NzgyNDE3ODV8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark futuristic network nodes, perfect for AI Recommendation section illustration.",
+        "usage_classes": "rounded-2xl opacity-80"
+      },
+      "students_hackathon": {
+        "url": "https://images.unsplash.com/photo-1756273343749-63f7d6ea0cda?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxzdHVkZW50JTIwcHJvZ3JhbW1pbmclMjBoYWNrYXRob258ZW58MHx8fHwxNzc4MjQxNzgwfDA&ixlib=rb-4.1.0&q=85",
+        "description": "Students working on laptops at a shared desk, for 'How it Works' or 'Community' section.",
+        "usage_classes": "rounded-2xl grayscale border border-white/10 hover:grayscale-0 transition-all duration-500"
+      },
+      "abstract_mesh_secondary": {
+        "url": "https://images.unsplash.com/photo-1737629918399-45526c4f9264?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwzfHxkYXJrJTIwbmVvbiUyMGFic3RyYWN0JTIwYmx1ZSUyMHB1cnBsZXxlbnwwfHx8fDE3NzgyNDE3ODV8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark background with purple and blue shapes, for footer or secondary section background.",
+        "usage_classes": "absolute inset-0 object-cover opacity-10"
+      }
+    }
+  },
+  "specific_design_rules": [
+    "Use Shadcn/UI for dashboard components (Tables, Dropdowns, Tabs, Calendars). Customize them to have dark mode defaults with blue/purple active states.",
+    "For the Landing Page, DO NOT use standard Shadcn containers. Use pure HTML + Tailwind for creative, asymmetrical layouts (The Tetris Grid).",
+    "Never use pure black or gray. Always tint surfaces towards the Navy base (#0B1020).",
+    "Use 'The Tracing Beam' (CSS gradient borders) for active states on key dashboard cards.",
+    "Data testing attributes (`data-testid`) MUST be included on all interactive elements (buttons, forms, links) for end-to-end testing.",
+    "Avoid the generic 'Vercel-look'. Over-index on deep space vibes with sharp neon accents.",
+    "Apply backdrop-blur-xl to the floating sidebar and header to create optical clarity over the dark navy background."
+  ],
+  "dependencies_to_install": [
+    "framer-motion",
+    "lucide-react",
+    "lenis"
+  ],
+  "instructions_to_main_agent": "Implement a full-stack NextStep platform containing both a marketing landing page and a dashboard app. Ensure the Tailwind config is extended with the brand colors defined in this file. The UI should strictly adhere to the dark mode neon aesthetic using glassmorphism. Use the provided image URLs exclusively. For charts/stats, use Shadcn Charts or Recharts with blue/purple gradients."
+}
